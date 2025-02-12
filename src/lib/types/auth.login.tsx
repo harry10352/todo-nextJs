@@ -1,24 +1,18 @@
 export interface AuthState {
-    data?: AuthResponse;
-    Authloading: boolean;
-    Autherror: boolean;
+  data?: AuthResponse;
+  Authloading: boolean;
+  Autherror: boolean;
 }
 
 export interface AuthResponse {
-  response: Response;
-  token: string;
-  user: User;
+  response: IResponse;
+  sessionId: string;
+  ["expiry_time_in_sec"]: number;
 }
 
-interface Response {
+export interface IResponse {
   code: number;
   message: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
 }
 
 export interface UserLgoinCredentials {
