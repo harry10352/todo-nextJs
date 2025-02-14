@@ -2,11 +2,10 @@ import {
   CreateTodoPayload,
   CreateTodoResponse,
 } from "@/lib/types/todoCreateType";
-import { DynamicActionTypes } from "../../../dynamicActionType";
 
-const createTodoActionType = "createTodo/Action";
-const createTodoActionReslovedType = "createTodo/Action/Resploved";
-const createTodoActionRejectedType = "createTodo/Action/Rejected";
+export const createTodoActionType = "createTodo/Action";
+export const createTodoActionReslovedType = "createTodo/Action/Resoloved";
+export const createTodoActionRejectedType = "createTodo/Action/Rejected";
 
 export function createTodoActionCreator(payload: CreateTodoPayload) {
   return { type: createTodoActionType, payload } as const;
@@ -21,6 +20,3 @@ export function createTodoActionResolved(content: CreateTodoResponse) {
 export function createTodoActionRejected(error: any) {
   return { type: createTodoActionRejectedType, payload: error } as const;
 }
-
-type CreateTodoActionTypes = typeof import("./create.action");
-export type CreateTodoActionType = DynamicActionTypes<CreateTodoActionTypes>;

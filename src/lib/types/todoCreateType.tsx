@@ -10,7 +10,7 @@ export interface CreateTodoData {
   title: string;
   desc: string;
   createdDate: number;
-  type: string;
+  type: Type;
   _id: string;
   __v: number;
 }
@@ -24,4 +24,11 @@ export interface CreateTodoPayload {
 interface Type {
   id: number;
   desc: string;
+}
+
+export interface CreateTodoState {
+  response?: IResponse;
+  data?: CreateTodoData;
+  createTodoloading: boolean;
+  createTodoError: boolean;
 }

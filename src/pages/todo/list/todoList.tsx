@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAppSelector } from "@/lib/redux/hook";
+import { CreateTodoData } from "@/lib/types/todoCreateType";
+import { useDispatch } from "react-redux";
+import { listTodoActionCreator } from "@/lib/action/feature/todo/list/list.action";
 import {
   Container,
   Typography,
@@ -9,19 +13,36 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
+  Button,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
+import { Delete, Edit, RemoveRedEye } from "@mui/icons-material";
+import CreateNoteDialogue from "@/app/components/createNoteDialogue";
 
 const TodoList: React.FC = () => {
-  const [todos, setTodos] = useState<
-    {
-      title: string;
-      type: string;
-      description: string;
-    }[]
-  >([]);
+  const dispatch = useDispatch();
+  const listData = useAppSelector(
+    (state) => state.defaultTodoState?.listTodoState
+  );
+  const [todos, setTodos] = useState<CreateTodoData[] | undefined>();
+  const [editTodo, setEditTodo] = useState<CreateTodoData | undefined>();
+  const [editTodoDialogOpen, setEditTodoDialogOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    dispatch(listTodoActionCreator());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (listData?.response?.code === 200 && listData?.data?.length) {
+      setTodos(listData?.data);
+    }
+    console.log(listData);
+  }, [listData]);
+  console.log("listData", todos);
+
+  function openDialogFn(todo: CreateTodoData) {
+    setEditTodo(todo);
+    setEditTodoDialogOpen(true);
+  }
 
   return (
     <Container maxWidth="lg">
@@ -35,35 +56,52 @@ const TodoList: React.FC = () => {
               <TableCell>Title</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Description</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {todos.map((todo, index) => (
-              <TableRow key={index}>
-                <TableCell>{todo.title}</TableCell>
-                <TableCell>{todo.type}</TableCell>
-                <TableCell>
-                  <div dangerouslySetInnerHTML={{ __html: todo.description }} />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => console.log("Edit", todo)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="primary"
-                    onClick={() => console.log("View", todo)}
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+            {todos?.length &&
+              todos?.map((todo, i) => (
+                <TableRow key={i}>
+                  <TableCell>{todo.title}</TableCell>
+                  <TableCell>{todo.type.desc}</TableCell>
+                  <TableCell style={{ padding: "10px" }}>
+                    <div dangerouslySetInnerHTML={{ __html: todo?.desc }} />
+                  </TableCell>
+                  <TableCell width={250}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      style={{ marginRight: "5px" }}
+                    >
+                      <RemoveRedEye />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      style={{ marginRight: "5px" }}
+                    >
+                      <Delete />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => openDialogFn(todo)}
+                    >
+                      <Edit />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <CreateNoteDialogue
+        name="Edit Note"
+        open={editTodoDialogOpen}
+        todo={editTodo}
+        onClose={() => setEditTodoDialogOpen(false)}
+      />
     </Container>
   );
 };

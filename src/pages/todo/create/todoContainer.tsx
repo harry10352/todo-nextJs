@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   TextField,
   Button,
@@ -16,6 +16,10 @@ import dynamic from "next/dynamic";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import { useDispatch } from "react-redux";
+import { createTodoActionCreator } from "@/lib/action/feature/todo/create/create.action";
+import { useAppSelector } from "@/lib/redux/hook";
+import { CreateTodoData } from "@/lib/types/todoCreateType";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
@@ -29,20 +33,37 @@ const dropdownValues: { [key: string]: { id: number; desc: string } } = {
   "3": { id: 3, desc: "Other" },
 };
 
-const TodoContainer: React.FC = () => {
+const TodoContainer: React.FC<{ todo?: CreateTodoData }> = (props) => {
+  const { todo } = props;
+  const dispatch = useDispatch();
+  const { data, response } = useAppSelector(
+    (state) => state.defaultTodoState.createTodoState
+  );
+
   const formik = useFormik({
     initialValues: {
-      title: "",
-      description: "",
-      type: "",
+      title: todo?.title || "",
+      description: todo?.desc || "",
+      type: todo?.type?.id || "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      const payload = {
+        type: dropdownValues[values.type],
+        desc: values.description,
+        title: values.title,
+      };
       // Handle form submission logic here
-      console.log(values);
-      console.log(dropdownValues[values.type]);
+      dispatch(createTodoActionCreator(payload));
     },
   });
+
+  useEffect(() => {
+    if (response?.code === 201) {
+      formik.resetForm();
+      console.log("Todo created successfully", data);
+    }
+  }, [data, response]);
 
   return (
     <Container maxWidth="lg">
@@ -74,6 +95,7 @@ const TodoContainer: React.FC = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             required
+            defaultValue={formik.values.type}
           >
             <MenuItem value="1">Personal</MenuItem>
             <MenuItem value="2">Work</MenuItem>
