@@ -2,8 +2,13 @@ import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Container, Box, TextField, Button, Typography } from "@mui/material";
+import { UserLgoinCredentials } from "@/lib/types/auth.login";
+import { useAppDispatch } from "@/lib/redux/hook";
+import { authActionCreator } from "@/lib/action/auth.action";
 
 const LoginPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Invalid email address")
@@ -12,6 +17,11 @@ const LoginPage: React.FC = () => {
       .min(6, "Password must be at least 6 characters long")
       .required("Password is required"),
   });
+
+  const loginHandler = (formState: UserLgoinCredentials) => {
+    console.log(formState);
+    dispatch(authActionCreator(formState));
+  };
 
   return (
     <Container maxWidth="sm">
@@ -29,7 +39,7 @@ const LoginPage: React.FC = () => {
           initialValues={{ email: "", password: "" }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
-            console.log(values);
+            loginHandler(values);
           }}
         >
           {({ errors, touched }) => (
