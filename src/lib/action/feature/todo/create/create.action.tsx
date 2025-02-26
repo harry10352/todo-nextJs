@@ -1,13 +1,10 @@
-import {
-  CreateTodoPayload,
-  CreateTodoResponse,
-} from "@/lib/types/todoCreateType";
+import { CreateTodoResponse } from "@/lib/types/todoCreateType";
 
 export const createTodoActionType = "createTodo/Action";
 export const createTodoActionReslovedType = "createTodo/Action/Resoloved";
 export const createTodoActionRejectedType = "createTodo/Action/Rejected";
 
-export function createTodoActionCreator(payload: CreateTodoPayload) {
+export function createTodoActionCreator(payload: FormData) {
   return { type: createTodoActionType, payload } as const;
 }
 createTodoActionCreator.toString = () => createTodoActionType;

@@ -11,6 +11,16 @@ class TodoApp extends App<{ pageProps: any; store: Store }> {
     if (jssStyles && jssStyles.parentNode) {
       jssStyles.parentNode.removeChild(jssStyles);
     }
+
+    if (
+      window.location.pathname !== "/login" &&
+      window.location.pathname !== "/register"
+    ) {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/login";
+      }
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,6 +34,7 @@ class TodoApp extends App<{ pageProps: any; store: Store }> {
 
   render() {
     const { Component, pageProps } = this.props;
+
     return (
       <>
         <StoreProvider>

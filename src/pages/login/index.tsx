@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Container, Box, TextField, Button, Typography } from "@mui/material";
 import { UserLgoinCredentials } from "@/lib/types/auth.login";
-import { useAppDispatch } from "@/lib/redux/hook";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hook";
 import { authActionCreator } from "@/lib/action/auth.action";
 
 const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
-
+  const { data } = useAppSelector((state) => state.authRoot.authState);
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Invalid email address")
@@ -22,6 +22,12 @@ const LoginPage: React.FC = () => {
     console.log(formState);
     dispatch(authActionCreator(formState));
   };
+
+  useEffect(() => {
+    if (data?.response?.code === 200 && data?.sessionId) {
+      window.location.href = "/dashboard";
+    }
+  }, [data]);
 
   return (
     <Container maxWidth="sm">
