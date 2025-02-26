@@ -31,6 +31,9 @@ const Sidebar: React.FC = () => {
   return (
     <StyledDrawer variant="permanent" anchor="left">
       <StyledList>
+        <StyledListItem onClick={() => routeToPage("/dashboard")}>
+          <ListItemText primary="Dashboard" />
+        </StyledListItem>
         <StyledListItem onClick={() => routeToPage("/todo/create")}>
           <ListItemText primary="Create Todo" />
         </StyledListItem>
