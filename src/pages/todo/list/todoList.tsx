@@ -15,7 +15,7 @@ import {
   Paper,
   Button,
 } from "@mui/material";
-import { Delete, Edit, RemoveRedEye } from "@mui/icons-material";
+import { Delete, Download, Edit, RemoveRedEye } from "@mui/icons-material";
 import CreateNoteDialogue from "@/app/components/createNoteDialogue";
 
 const TodoList: React.FC = () => {
@@ -44,8 +44,38 @@ const TodoList: React.FC = () => {
     setEditTodoDialogOpen(true);
   }
 
+  const downloadFile = async (todo: CreateTodoData) => {
+    const sessionId = sessionStorage.getItem("token");
+    try {
+      const response = await fetch(`${process.env.path}/notes/file/download`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          sessionId: sessionId || "",
+          noteId: todo._id,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = todo.file; // the appropriate file name
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.open(url);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("There was an error downloading the file:", error);
+    }
+  };
+
   return (
-    <Container maxWidth="lg">
+    <Container>
       <Typography variant="h4" gutterBottom style={{ marginTop: "40px" }}>
         Todo List
       </Typography>
@@ -68,7 +98,7 @@ const TodoList: React.FC = () => {
                   <TableCell style={{ padding: "10px" }}>
                     <div dangerouslySetInnerHTML={{ __html: todo?.desc }} />
                   </TableCell>
-                  <TableCell width={250}>
+                  <TableCell width={280}>
                     <Button
                       variant="contained"
                       color="primary"
@@ -86,9 +116,17 @@ const TodoList: React.FC = () => {
                     <Button
                       variant="contained"
                       color="secondary"
+                      style={{ marginRight: "5px" }}
                       onClick={() => openDialogFn(todo)}
                     >
                       <Edit />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => downloadFile(todo)}
+                    >
+                      <Download />
                     </Button>
                   </TableCell>
                 </TableRow>
