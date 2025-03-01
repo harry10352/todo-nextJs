@@ -10,5 +10,9 @@ export function getDefaultTodoState(): DefaultTodoState {
       listTodoError: false,
       listTodoloading: false,
     },
+    deleteTodoState: {
+      deleteTodoError: false,
+      deleteTodoloading: false,
+    },
   };
 }
