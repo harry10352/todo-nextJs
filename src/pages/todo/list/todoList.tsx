@@ -17,11 +17,15 @@ import {
 } from "@mui/material";
 import { Delete, Download, Edit, RemoveRedEye } from "@mui/icons-material";
 import CreateNoteDialogue from "@/app/components/createNoteDialogue";
+import { deleteTodoActionCreator } from "@/lib/action/feature/todo/delete/delete.action";
 
 const TodoList: React.FC = () => {
   const dispatch = useDispatch();
   const listData = useAppSelector(
     (state) => state.defaultTodoState?.listTodoState
+  );
+  const deleteDataRes = useAppSelector(
+    (state) => state.defaultTodoState?.deleteTodoState
   );
   const [todos, setTodos] = useState<CreateTodoData[] | undefined>();
   const [editTodo, setEditTodo] = useState<CreateTodoData | undefined>();
@@ -32,12 +36,18 @@ const TodoList: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (deleteDataRes?.response?.code === 200) {
+      dispatch(listTodoActionCreator());
+    }
+  }, [dispatch, deleteDataRes]);
+
+  useEffect(() => {
     if (listData?.response?.code === 200 && listData?.data?.length) {
       setTodos(listData?.data);
     }
     console.log(listData);
   }, [listData]);
-  console.log("listData", todos);
+  console.log("deleteDataRes", deleteDataRes);
 
   function openDialogFn(todo: CreateTodoData) {
     setEditTodo(todo);
@@ -74,10 +84,14 @@ const TodoList: React.FC = () => {
     }
   };
 
+  const deleteNoteHandlerFn = (todo: CreateTodoData) => {
+    dispatch(deleteTodoActionCreator(todo._id));
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom style={{ marginTop: "40px" }}>
-        Todo List
+        {todos?.length} Todos
       </Typography>
       <TableContainer component={Paper}>
         <Table>
@@ -92,7 +106,7 @@ const TodoList: React.FC = () => {
           <TableBody>
             {todos?.length &&
               todos?.map((todo, i) => (
-                <TableRow key={i}>
+                <TableRow key={i + todo._id}>
                   <TableCell>{todo.title}</TableCell>
                   <TableCell>{todo.type.desc}</TableCell>
                   <TableCell style={{ padding: "10px" }}>
@@ -110,6 +124,7 @@ const TodoList: React.FC = () => {
                       variant="contained"
                       color="error"
                       style={{ marginRight: "5px" }}
+                      onClick={() => deleteNoteHandlerFn(todo)}
                     >
                       <Delete />
                     </Button>

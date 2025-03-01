@@ -11,7 +11,7 @@ export interface CreateTodoData {
   desc: string;
   createdDate: number;
   type: Type;
-  file: string;
+  file: any;
   _id: string;
   __v: number;
 }

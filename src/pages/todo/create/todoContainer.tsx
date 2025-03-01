@@ -82,7 +82,7 @@ const TodoContainer: React.FC<{ todo?: CreateTodoData }> = (props) => {
   }, [data, response]);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="md">
       <form onSubmit={formik.handleSubmit}>
         <TextField
           label="Title"
